@@ -61,6 +61,20 @@ var rules = [{
 	}
 }];
 
+var ngRules = [
+	function(tweet) {
+		var rule = require('./ngRules.json');
+		for (var i = rule.length - 1; i >= 0; i--) {
+			var reg = new RegExp(rule[i].reg, rule[i].flag);
+			var result = reg.test(tweet.text);
+			if (result) {
+				return true;
+			}
+		}
+		return false;
+	}
+]
+
 var tweets = (function() {
 	var tweetStorage = [];
 	var count = 0;
@@ -72,9 +86,14 @@ var tweets = (function() {
 			if (rules[i].condition(tweet)) {
 				tweet = rules[i].func(tweet, tweetStorage);
 			}
-		};
+		}
+		for (var i = ngRules.length - 1; i >= 0; i--) {
+			if (ngRules[i](tweet)) {
+				return;
+			}
+		}
 		hash.update(tweet.user.screen_name + (new Date()).toDateString());
-		var isBottom = (window.scrollY === (document.documentElement.getBoundingClientRect().height - window.innerHeight));
+		var isBottom = (window.scrollY === (document.body.scrollHeight - document.body.clientHeight));
 		document.write(count + ': Anonymous ' + Date() + ' ID: ' + hash.digest('base64').slice(0, 9) + '<br>' + tweet.text + '<br>');
 		if (isBottom) {
 			document.body.scrollTop = document.body.scrollHeight;
@@ -84,4 +103,8 @@ var tweets = (function() {
 
 stream.on('tweet', function(t) {
 	tweets(t);
+});
+
+stream.on('error', function(err) {
+	console.log(err);
 });
