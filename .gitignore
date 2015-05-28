@@ -1,2 +1,6 @@
 /config.json
+/ngRules.json
+/ngClients.json
+/replaceRules.json
+/keys.json
 /node*

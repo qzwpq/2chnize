@@ -1,4 +1,7 @@
 [{
-	"reg":"#",
-	"flag":"g"
-	}]
+	"reg": "shindan",
+	"flag": "",
+}, {
+	"reg": "ask",
+	"flag": ""
+}]

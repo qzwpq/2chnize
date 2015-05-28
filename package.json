@@ -1,5 +1,9 @@
 {
-	"name":"2chnize",
-	"version":"0.0.0",
-	"main":"main.js"
+	"name": "2chnize",
+	"version": "0.0.0",
+	"main": "main.js",
+	"dependencies": {
+		"twit": "",
+		"vue": ""
+	}
 }
