@@ -4,6 +4,8 @@
 	"main": "main.js",
 	"dependencies": {
 		"twit": "",
-		"vue": ""
+		"vue": "",
+		"jquery":"",
+		"bootstrap":""
 	}
 }

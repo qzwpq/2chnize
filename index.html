@@ -3,10 +3,21 @@
 
 <head>
 	<title></title>
+	<style>
+	[v-cloak] {
+		display: none;
+	}
+	</style>
 </head>
 
 <body>
-	<div id="main">
+	<div id="main" v-cloak>
+		<div id="timeline" v-repeat="tweetStorage | ngTweet">
+			{{count}}: {{nanashi}} {{dateString}} <span v-on="click: userDetail">ID:{{hashed_id}}[{{tweetCount}}/{{tweetCountTable[hashed_id]}}]</span>
+			<br>{{{text | text}}}
+			<br>
+		</div>
+		<input placeholder="tweet" v-on="keyup:tweet | key 'enter'">
 	</div>
 </body>
 <script type="text/javascript" src="./app.js"></script>
