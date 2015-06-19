@@ -161,7 +161,15 @@ var tweets = (function() {
 		el: "#main",
 		data: {
 			tweetStorage: tweetStorage,
-			tweetCountTable: tweetCountTable
+			tweetCountTable: tweetCountTable,
+			user_timeline: {
+				screen_name: '',
+				tweets: []
+			},
+			user_detail: {
+				screen_name: '',
+				tweet: {}
+			}
 		},
 		filters: {
 			ngTweet: function(tweetStorage) {
@@ -180,20 +188,46 @@ var tweets = (function() {
 			tweet: function(event) {
 				var text = event.target.value;
 				console.log(text);
+				var param = {
+					statuses: text
+				};
 				if (text)
-					T.post('statuses/update', {
-						status: text
-					}, function(err, dat) {
+					T.post('statuses/update', param, function(err, dat) {
 						if (err) console.log(err);
 						console.log(dat);
 					});
 				event.target.value = '';
 				return false;
 			},
-			userDetail:function(event){
+			userDetail: function(event) {
 				var tweet = event.targetVM;
-				var user=tweet.user.screen_name;
-				console.log(user);
+				var screen_name = tweet.user.screen_name;
+				this.user_detail.screen_name = screen_name;
+				this.user_detail.$set('tweet', tweet);
+				$('#user-detail').modal();
+			},
+			showTweets: function(type, event) {
+				this.user_timeline.$set('tweets', []);
+				// var tweet = event.targetVM;
+				var apiEndPoints = {
+					timeline: 'statuses/user_timeline',
+					favorite: 'favorites/list'
+				};
+				var apiPath = apiEndPoints[type];
+				var tweet = this.user_detail.tweet;
+				var screen_name = tweet.user.screen_name;
+				this.user_timeline.screen_name = screen_name;
+				var param = {
+					screen_name: screen_name,
+					count: 30
+				};
+				var _this = this;
+				var setTweets = function(err, dat) {
+					if (err) console.log(err);
+					_this.user_timeline.$set('tweets', dat);
+				};
+				T.get(apiPath, param, setTweets);
+				$('#user-timeline').modal();
 			}
 		}
 	});
@@ -223,7 +257,7 @@ var tweets = (function() {
 		// 	}
 		// }
 		// document.documentElement.scrollHeight - document.documentElement.clientHeight === document.scrollMaxY
-		var isBottom = window.scrollY >= document.documentElement.scrollHeight - document.documentElement.clientHeight;
+		var isBottom = window.scrollY + 50 >= document.documentElement.scrollHeight - document.documentElement.clientHeight;
 		var dateString = (function(d) {
 			var pad = function(s) {
 				s = s + '';
@@ -270,4 +304,53 @@ stream.on('error', function(err) {
 	setTimeout(function() {
 		stream.start();
 	}, 5000);
+});
+
+// http://miles-by-motorcycle.com/fv-b-8-670/stacking-bootstrap-dialogs-using-event-callbacks
+$(document).ready(function() {
+
+	$('#openBtn').click(function() {
+		$('#myModal').modal({
+			show: true
+		})
+	});
+
+
+	$('.modal').on('hidden.bs.modal', function(event) {
+		$(this).removeClass('fv-modal-stack');
+		$('body').data('fv_open_modals', $('body').data('fv_open_modals') - 1);
+	});
+
+
+	$('.modal').on('shown.bs.modal', function(event) {
+
+		// keep track of the number of open modals
+
+		if (typeof($('body').data('fv_open_modals')) == 'undefined') {
+			$('body').data('fv_open_modals', 0);
+		}
+
+
+		// if the z-index of this modal has been set, ignore.
+
+		if ($(this).hasClass('fv-modal-stack')) {
+			return;
+		}
+
+		$(this).addClass('fv-modal-stack');
+
+		$('body').data('fv_open_modals', $('body').data('fv_open_modals') + 1);
+
+		$(this).css('z-index', 1040 + (10 * $('body').data('fv_open_modals')));
+
+		$('.modal-backdrop').not('.fv-modal-stack')
+			.css('z-index', 1039 + (10 * $('body').data('fv_open_modals')));
+
+
+		$('.modal-backdrop').not('fv-modal-stack')
+			.addClass('fv-modal-stack');
+
+	});
+
+
 });

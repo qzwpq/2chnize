@@ -8,18 +8,54 @@
 		display: none;
 	}
 	</style>
+	<link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css">
 </head>
 
 <body>
-	<div id="main" v-cloak>
+	<div id="main" class="container-fluid" v-cloak>
+
 		<div id="timeline" v-repeat="tweetStorage | ngTweet">
 			{{count}}: {{nanashi}} {{dateString}} <span v-on="click: userDetail">ID:{{hashed_id}}[{{tweetCount}}/{{tweetCountTable[hashed_id]}}]</span>
 			<br>{{{text | text}}}
 			<br>
 		</div>
+
+		<div id="user-detail" class="modal fade">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">{{user_detail.screen_name}}</h4>
+					</div>
+					<div class="modal-body">
+						<span v-on="click: showTweets('timeline',$event)">Timeline</span>
+						<span v-on="click: showTweets('favorite',$event)">Favorite</span>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="user-timeline" class="modal fade">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">{{user_timeline.screen_name}}</h4>
+					</div>
+					<div class="modal-body">
+						<div v-repeat="user_timeline.tweets">
+							{{text}}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<input placeholder="tweet" v-on="keyup:tweet | key 'enter'">
+
 	</div>
 </body>
+
 <script type="text/javascript" src="./app.js"></script>
 
 </html>
