@@ -30,6 +30,11 @@ var T = new Twit(KEYS.product);
 
 var stream = T.stream('user');
 
+var APIENDPOINTS = {
+	favorite: 'favorites/list',
+	timeline: 'statuses/user_timeline'
+};
+
 
 // note that the last function will be executed at first
 var rules = [{
@@ -60,7 +65,8 @@ var rules = [{
 	},
 	func: function(tweet) {
 		for (var i = tweet.entities.urls.length - 1; i >= 0; i--) {
-			tweet.text = tweet.text.replace(tweet.entities.urls[i].url, '<a href="tweet.entities.urls[i].expanded_url">' + tweet.entities.urls[i].display_url + '</a>');
+			tweet.text = tweet.text.replace(tweet.entities.urls[i].url, '<a href="' +
+				tweet.entities.urls[i].expanded_url + '">' + tweet.entities.urls[i].display_url + '</a>');
 		}
 		return tweet;
 	}
@@ -107,7 +113,6 @@ var rules = [{
 		return typeof tweet.retweeted_status !== 'undefined';
 	},
 	func: function(tweet) {
-		tweet = tweet.retweeted_status;
 		return tweet;
 	}
 }];
@@ -164,6 +169,7 @@ var tweets = (function() {
 			tweetCountTable: tweetCountTable,
 			user_timeline: {
 				screen_name: '',
+				type: '',
 				tweets: []
 			},
 			user_detail: {
@@ -181,6 +187,7 @@ var tweets = (function() {
 				});
 			},
 			text: function(text) {
+				text = text.replace(/\n/g, '<br>');
 				return text;
 			}
 		},
@@ -189,13 +196,14 @@ var tweets = (function() {
 				var text = event.target.value;
 				console.log(text);
 				var param = {
-					statuses: text
+					status: text
 				};
-				if (text)
+				if (text) {
 					T.post('statuses/update', param, function(err, dat) {
 						if (err) console.log(err);
 						console.log(dat);
 					});
+				}
 				event.target.value = '';
 				return false;
 			},
@@ -208,15 +216,12 @@ var tweets = (function() {
 			},
 			showTweets: function(type, event) {
 				this.user_timeline.$set('tweets', []);
+				this.user_timeline.$set('type', type);
 				// var tweet = event.targetVM;
-				var apiEndPoints = {
-					timeline: 'statuses/user_timeline',
-					favorite: 'favorites/list'
-				};
-				var apiPath = apiEndPoints[type];
+				var apiPath = APIENDPOINTS[type];
 				var tweet = this.user_detail.tweet;
 				var screen_name = tweet.user.screen_name;
-				this.user_timeline.screen_name = screen_name;
+				this.user_timeline.$set('screen_name', screen_name);
 				var param = {
 					screen_name: screen_name,
 					count: 30
@@ -227,7 +232,27 @@ var tweets = (function() {
 					_this.user_timeline.$set('tweets', dat);
 				};
 				T.get(apiPath, param, setTweets);
-				$('#user-timeline').modal();
+				var $timeline = $('#user-timeline');
+				$timeline.modal();
+			},
+			moreTweets: function(event) {
+				var type = this.user_timeline.type;
+				var apiPath = APIENDPOINTS[type];
+				var oldest_tweet_index = this.user_timeline.tweets.length - 1;
+				var oldest_id = this.user_timeline.tweets[oldest_tweet_index].id_str;
+				var screen_name = this.user_timeline.screen_name;
+				var param = {
+					screen_name: screen_name,
+					max_id: oldest_id,
+					count: 30
+				};
+				var _this = this;
+				var addTweets = function(err, dat) {
+					if (err) console.log(err);
+					var tweets = _this.user_timeline.tweets;
+					_this.user_timeline.$set('tweets', tweets.concat(dat.slice(1)));
+				};
+				T.get(apiPath, param, addTweets);
 			}
 		}
 	});
@@ -308,14 +333,6 @@ stream.on('error', function(err) {
 
 // http://miles-by-motorcycle.com/fv-b-8-670/stacking-bootstrap-dialogs-using-event-callbacks
 $(document).ready(function() {
-
-	$('#openBtn').click(function() {
-		$('#myModal').modal({
-			show: true
-		})
-	});
-
-
 	$('.modal').on('hidden.bs.modal', function(event) {
 		$(this).removeClass('fv-modal-stack');
 		$('body').data('fv_open_modals', $('body').data('fv_open_modals') - 1);

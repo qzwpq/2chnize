@@ -40,12 +40,13 @@
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
-						<h4 class="modal-title">{{user_timeline.screen_name}}</h4>
+						<h4 class="modal-title">{{user_timeline.screen_name}}/{{user_timeline.type}}</h4>
 					</div>
 					<div class="modal-body">
 						<div v-repeat="user_timeline.tweets">
 							{{text}}
 						</div>
+						<button name="more" type="button" v-on="click:moreTweets">more</button>
 					</div>
 				</div>
 			</div>
