@@ -92,7 +92,7 @@ var prepareTweetRules = [function(tweet) {
 		})(date);
 		tweet.dateString = dateString;
 		tweet.hashedId = hashedId;
-		tweet.nanashi = config.nanashi;
+		tweet.NAME = config.NONAME_NAME;
 		return tweet;
 	},
 	function(tweet) {
