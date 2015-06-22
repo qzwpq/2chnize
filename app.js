@@ -26,7 +26,7 @@ var config = require(CONFIG_FILE);
 
 var KEYS = require(KEY_FILE);
 
-var T = new Twit(KEYS.product);
+var T = new Twit(KEYS[0]);
 
 var stream = T.stream('user');
 
