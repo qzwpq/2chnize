@@ -14,9 +14,9 @@
 <body>
 	<div id="main" class="container-fluid" v-cloak>
 
-		<div id="timeline" v-repeat="tweetStorage | ngTweet">
-			{{count}}: {{nanashi}} {{dateString}} <span v-on="click: userDetail">ID:{{hashed_id}}[{{tweetCount}}/{{tweetCountTable[hashed_id]}}]</span>
-			<br>{{{text | text}}}
+		<div id="timeline" v-repeat="home_timeline.tweetStorage | ngTweet">
+			{{$index+1}}: {{nanashi}} {{dateString}} <span v-on="click: userDetail">ID:{{hashedId}}[{{tweetCount}}/{{home_timeline.tweetCountTable[hashedId]}}]</span>
+			<br>{{{text}}}
 			<br>
 		</div>
 
@@ -28,8 +28,8 @@
 						<h4 class="modal-title">{{user_detail.screen_name}}</h4>
 					</div>
 					<div class="modal-body">
-						<span v-on="click: showTweets('timeline',$event)">Timeline</span>
-						<span v-on="click: showTweets('favorite',$event)">Favorite</span>
+						<span v-on="click: showTweets('statuses/user_timeline',$event)">Timeline</span>
+						<span v-on="click: showTweets('favorites/list',$event)">Favorite</span>
 					</div>
 				</div>
 			</div>
@@ -40,13 +40,13 @@
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
-						<h4 class="modal-title">{{user_timeline.screen_name}}/{{user_timeline.type}}</h4>
+						<h4 class="modal-title">{{user_detail.screen_name}}/{{user_timeline.apiPath}}</h4>
 					</div>
 					<div class="modal-body">
 						<div v-repeat="user_timeline.tweets">
-							{{text}}
+							{{{text}}}
 						</div>
-						<button name="more" type="button" v-on="click:moreTweets">more</button>
+						<button name="more" type="button" v-on="click:showTweets(user_timeline.apiPath,$event)">more</button>
 					</div>
 				</div>
 			</div>
