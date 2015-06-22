@@ -229,7 +229,7 @@ var createHashedId = function(screen_name, created_at) {
 var incTweetCount = function(hashedId) {
 	var oldCount = app.home_timeline.tweetCountTable[hashedId];
 	oldCount = oldCount ? oldCount : 0;
-	app.home_timeline.tweetCountTable[hashedId] = oldCount + 1;
+	app.home_timeline.tweetCountTable.$set(hashedId, oldCount + 1);
 	return oldCount + 1;
 };
 
