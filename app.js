@@ -192,7 +192,8 @@ var app = new Vue({
 		},
 		showTweets: function(apiPath, event) {
 			var param = {};
-			if (this.user_timeline.isFirst) {
+			var isFirst = this.user_timeline.isFirst;
+			if (isFirst) {
 				this.user_timeline.$set('tweets', []);
 				this.user_timeline.apiPath = apiPath;
 			} else {
@@ -206,11 +207,11 @@ var app = new Vue({
 			var setTweets = function(err, dat) {
 				if (err) console.log(err);
 				var tweets = this.user_timeline.tweets;
-				dat=dat.slice(1).map(prepareTweet);
+				dat = dat.slice(isFirst ? 0 : 1).map(prepareTweet);
 				this.user_timeline.$set('tweets', tweets.concat(dat));
 			}.bind(this);
 			T.get(apiPath, param, setTweets);
-			if (this.user_timeline.isFirst) {
+			if (isFirst) {
 				$('#user-timeline').modal();
 				this.user_timeline.isFirst = false;
 			}
