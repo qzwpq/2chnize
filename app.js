@@ -93,7 +93,6 @@ var prepareTweetRules = [function(tweet) {
 		tweet.dateString = dateString;
 		tweet.hashedId = hashedId;
 		tweet.nanashi = config.nanashi;
-		tweet.tweetCount = incTweetCount(hashedId);
 		return tweet;
 	},
 	function(tweet) {
@@ -244,6 +243,7 @@ var prepareTweet = function(tweet, tweetStorage) {
 
 var newTweet = function(tweet, app) {
 	tweet = prepareTweet(tweet, app.home_timeline.tweetStorage);
+	tweet.tweetCount = incTweetCount(tweet.hashedId);
 	app.home_timeline.tweetStorage.push(tweet);
 };
 
