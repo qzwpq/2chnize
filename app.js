@@ -245,6 +245,7 @@ var prepareTweet = function(tweet, tweetStorage) {
 var newTweet = function(tweet, app) {
 	tweet = prepareTweet(tweet, app.home_timeline.tweetStorage);
 	tweet.tweetCount = incTweetCount(tweet.hashedId);
+	tweet.index = app.home_timeline.tweetStorage.length + 1;
 	app.home_timeline.tweetStorage.push(tweet);
 };
 

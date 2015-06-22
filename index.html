@@ -15,7 +15,7 @@
 	<div id="main" class="container-fluid" v-cloak>
 
 		<div id="timeline" v-repeat="home_timeline.tweetStorage | ngTweet">
-			{{$index+1}}: {{nanashi}} {{dateString}} <span v-on="click: userDetail">ID:{{hashedId}}[{{tweetCount}}/{{home_timeline.tweetCountTable[hashedId]}}]</span>
+			{{index}}: {{nanashi}} {{dateString}} <span v-on="click: userDetail">ID:{{hashedId}}[{{tweetCount}}/{{home_timeline.tweetCountTable[hashedId]}}]</span>
 			<br>{{{text}}}
 			<br>
 		</div>
