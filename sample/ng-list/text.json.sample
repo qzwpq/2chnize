@@ -1,0 +1,10 @@
+[{
+	"reg": "shindan",
+	"flag": "i"
+}, {
+	"reg": "ask",
+	"flag": "i"
+}, {
+	"reg": "連ガチャ",
+	"flag": ""
+}]
