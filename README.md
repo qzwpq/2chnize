@@ -13,7 +13,7 @@ BBS-style twitter client
 git clone https://github.com/qzwpq/2chnize.git ~/2chnize
 cd ~/2chnize
 npm install
-echo '[]' | tee ng-list/client.json ng-list/text.json replace-rule/text.json > /dev/null
+echo '[]' | tee ng-list/{client,text,screen_name}.json replace-rule/text.json > /dev/null
 cp sample/config.json.sample config.json
 cp sample/keys.json.sample keys.json
 vim keys.json # write your keys

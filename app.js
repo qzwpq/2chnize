@@ -16,6 +16,8 @@ var NG_TEXT = __dirname + '/ng-list/text.json';
 
 var NG_CLIENT = __dirname + '/ng-list/client.json';
 
+var NG_SCREEN_NAME = __dirname + '/ng-list/screen_name.json';
+
 var REPLACE_TEXT = __dirname + '/replace-rule/text.json';
 
 var CONFIG_FILE = __dirname + '/config.json';
@@ -129,6 +131,18 @@ var ngTweetRules = [
 		for (var i = rule.length - 1; i >= 0; i--) {
 			var reg = new RegExp(rule[i].reg, rule[i].flag);
 			var result = reg.test(clientName);
+			if (result) {
+				return true;
+			}
+		}
+		return false;
+	},
+	function(tweet) {
+		var rule = require(NG_SCREEN_NAME);
+		var screen_name = tweet.user.screen_name;
+		for (var i = rule.length - 1; i >= 0; i--) {
+			var reg = new RegExp(rule[i].reg, rule[i].flag);
+			var result = reg.test(screen_name);
 			if (result) {
 				return true;
 			}
