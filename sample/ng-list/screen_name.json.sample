@@ -1,4 +1,5 @@
 [{
 	"reg":"Copy__writing",
-	"flag":""
+	"flag":"",
+	"includeMention":true
 }]
