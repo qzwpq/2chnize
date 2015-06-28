@@ -146,7 +146,8 @@ var ngTweetRules = [
 			if (result) {
 				return true;
 			}
-			var includeMention = rule[i].includeMention || true;
+			var includeMention = rule[i].includeMention;
+			includeMention = includeMention === void 0 ? true : includeMention;
 			if(includeMention){
 				for (var j = tweet.entities.user_mentions.length - 1; j >= 0; j--) {
 					var mention  = tweet.entities.user_mentions[j];
