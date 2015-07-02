@@ -14,10 +14,14 @@
 <body>
 	<div id="main" class="container-fluid" v-cloak>
 
-		<div id="timeline" v-repeat="home_timeline.tweetStorage | ngTweet">
-			{{index}}: {{NAME}} {{dateString}} <span v-on="click: userDetail">ID:{{hashedId}}[{{tweetCount}}/{{home_timeline.tweetCountTable[hashedId]}}]</span>
-			<br>{{{text}}}
-			<br>
+		<div class="row">
+			<div class="col-xs-6" v-repeat="timelines">
+				<div v-repeat="tweets | ngTweet">
+					{{index}}: {{NAME}} {{dateString}} <span v-on="click: userDetail">ID:{{hashedId}}[{{tweetCount}}/{{tweetCountTable[hashedId]}}]</span>
+					<br>{{{text}}}
+					<br>
+				</div>
+			</div>
 		</div>
 
 		<div id="user-detail" class="modal fade">

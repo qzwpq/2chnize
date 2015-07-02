@@ -1,0 +1,9 @@
+[{
+	"isStream": true,
+	"apiPath": "user"
+}, {
+	"apiPath": "statuses/user_timeline",
+	"param": {
+		"screen_name": "qzwpq"
+	}
+}]

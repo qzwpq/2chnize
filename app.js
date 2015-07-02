@@ -24,6 +24,8 @@ var CONFIG_FILE = __dirname + '/config.json';
 
 var KEY_FILE = __dirname + '/keys.json';
 
+var TIMELINES = __dirname + '/timelines.json';
+
 var config = require(CONFIG_FILE);
 
 var KEYS = require(KEY_FILE);
@@ -31,6 +33,8 @@ var KEYS = require(KEY_FILE);
 var T = new Twit(KEYS[0]);
 
 var stream = T.stream('user');
+
+var timelineConfigs = require(TIMELINES);
 
 var prepareTweetRules = [function(tweet) {
 		var replaceRule = require(REPLACE_TEXT);
@@ -64,12 +68,12 @@ var prepareTweetRules = [function(tweet) {
 			}
 		}
 		return tweet;
-	}, function(tweet, tweetStorage) {
+	}, function(tweet, tweets) {
 		for (var i = tweet.entities.user_mentions.length - 1; i >= 0; i--) {
 			var mention = tweet.entities.user_mentions[i];
 			if (mention.id_str == tweet.in_reply_to_user_id_str) {
-				for (var j = tweetStorage.length - 1; j >= 0; j--) {
-					if (tweetStorage[j].id_str === tweet.in_reply_to_status_id_str) {
+				for (var j = tweets.length - 1; j >= 0; j--) {
+					if (tweets[j].id_str === tweet.in_reply_to_status_id_str) {
 						tweet.text = tweet.text.replace('@' + mention.screen_name, '&gt;&gt;' + (j + 1));
 						break;
 					}
@@ -148,11 +152,11 @@ var ngTweetRules = [
 			}
 			var includeMention = rule[i].includeMention;
 			includeMention = includeMention === void 0 ? true : includeMention;
-			if(includeMention){
+			if (includeMention) {
 				for (var j = tweet.entities.user_mentions.length - 1; j >= 0; j--) {
-					var mention  = tweet.entities.user_mentions[j];
+					var mention = tweet.entities.user_mentions[j];
 					result = reg.test(mention.screen_name);
-					if(result){
+					if (result) {
 						return true;
 					}
 				}
@@ -165,10 +169,7 @@ var ngTweetRules = [
 var app = new Vue({
 	el: '#main',
 	data: {
-		home_timeline: {
-			tweetStorage: [],
-			tweetCountTable: {}
-		},
+		timelines: [],
 		user_timeline: {
 			apiPath: '',
 			tweets: [],
@@ -182,8 +183,8 @@ var app = new Vue({
 		ngTweetRules: ngTweetRules
 	},
 	filters: {
-		ngTweet: function(tweetStorage) {
-			return tweetStorage.filter(function(tweet) {
+		ngTweet: function(tweets) {
+			return tweets.filter(function(tweet) {
 				for (var i = this.ngTweetRules.length - 1; i >= 0; i--) {
 					if (this.ngTweetRules[i](tweet)) return false;
 				}
@@ -251,59 +252,79 @@ var createHashedId = function(screen_name, created_at) {
 	return hash.digest('base64').slice(0, 9);
 };
 
-var incTweetCount = function(hashedId) {
-	var oldCount = app.home_timeline.tweetCountTable[hashedId];
-	oldCount = oldCount ? oldCount : 0;
-	app.home_timeline.tweetCountTable.$set(hashedId, oldCount + 1);
+var incTweetCount = function(hashedId, tweetCountTable) {
+	var oldCount = tweetCountTable[hashedId] || 0;
+	tweetCountTable.$set(hashedId, oldCount + 1);
 	return oldCount + 1;
 };
 
-var prepareTweet = function(tweet, tweetStorage) {
-	tweetStorage = tweetStorage || [];
+var prepareTweet = function(tweet, tweets) {
+	tweets = tweets || [];
 	for (var i = prepareTweetRules.length - 1; i >= 0; i--) {
 		var rule = prepareTweetRules[i];
-		tweet = rule(tweet, tweetStorage);
+		tweet = rule(tweet, tweets);
 	}
 	return tweet;
 };
 
-var newTweet = function(tweet, app) {
-	tweet = prepareTweet(tweet, app.home_timeline.tweetStorage);
-	tweet.tweetCount = incTweetCount(tweet.hashedId);
-	tweet.index = app.home_timeline.tweetStorage.length + 1;
-	app.home_timeline.tweetStorage.push(tweet);
+var newTweet = function(tweet, timeline) {
+	var tweets = timeline.tweets;
+	var tweetCountTable = timeline.tweetCountTable;
+	tweet = prepareTweet(tweet, tweets);
+	tweet.tweetCount = incTweetCount(tweet.hashedId, tweetCountTable);
+	tweet.index = tweets.length + 1;
+	tweets.push(tweet);
 };
 
-T.get('statuses/home_timeline', {
-	count: 100
-}, function(err, dat) {
-	if (err) console.log(err);
-	for (var i = dat.length - 1; i >= 0; i--) {
-		var tweet = dat[i];
-		newTweet(tweet, app);
+timelineConfigs.forEach(function(timelineConfig) {
+	var timeline = {
+		tweets: [],
+		tweetCountTable: {}
+	};
+	app.timelines.push(timeline);
+	if (timelineConfig.isStream && timelineConfig.apiPath === 'user') {
+		var param = {
+			count: 100
+		};
+		T.get('statuses/home_timeline', param, function(err, dat) {
+			if (err) console.log(err);
+			for (var i = dat.length - 1; i >= 0; i--) {
+				var tweet = dat[i];
+				newTweet(tweet, timeline);
+			}
+			// setTimeout(function() {
+			// 	document.body.scrollTop = document.body.scrollHeight;
+			// }, 500);
+		});
+		stream.on('tweet', function(tweet) {
+			// var isBottom = window.scrollY + 40 > document.documentElement.scrollHeight - document.documentElement.clientHeight;
+			newTweet(tweet, timeline);
+			// if (isBottom) {
+			// 	setTimeout(function() {
+			// 		document.body.scrollTop = document.body.scrollHeight
+			// 	}, 80);
+		});
+		stream.on('error', function(err) {
+			console.log(err);
+			stream.stop();
+			setTimeout(function() {
+				stream.start();
+			}, 5000);
+		});
+	} else if (!timelineConfig.isStream) {
+		var apiPath = timelineConfig.apiPath;
+		var param = timelineConfig.param;
+		param.count = 100;
+		T.get(apiPath, param, function(err, dat) {
+			if (err) console.log(err);
+			dat.reverse().forEach(function(tweet) {
+				newTweet(tweet, timeline);
+			});
+		});
 	}
-	setTimeout(function() {
-		document.body.scrollTop = document.body.scrollHeight;
-	}, 500);
 });
 
-stream.on('tweet', function(tweet) {
-	var isBottom = window.scrollY + 40 > document.documentElement.scrollHeight - document.documentElement.clientHeight;
-	newTweet(tweet, app);
-	if (isBottom) {
-		setTimeout(function() {
-			document.body.scrollTop = document.body.scrollHeight
-		}, 80);
-	}
-});
 
-stream.on('error', function(err) {
-	console.log(err);
-	stream.stop();
-	setTimeout(function() {
-		stream.start();
-	}, 5000);
-});
 
 // http://miles-by-motorcycle.com/fv-b-8-670/stacking-bootstrap-dialogs-using-event-callbacks
 $(document).ready(function() {
