@@ -321,6 +321,20 @@ timelineConfigs.forEach(function(timelineConfig) {
 				newTweet(tweet, timeline);
 			});
 		});
+		delete param.count;
+		setInterval(function() {
+			var latestTweetIndex = timeline.tweets.length - 1;
+			var latestTweet = timeline.tweets[latestTweetIndex];
+			param.since_id = latestTweet.id_str;
+			T.get(apiPath, param, function(err, dat) {
+				if (dat.length) {
+					var tweets = timeline.tweets;
+					dat = dat.map(prepareTweet);
+					tweets.concat(dat);
+					timeline.$set('tweets', tweets);
+				}
+			});
+		}, 30000);
 	}
 });
 
