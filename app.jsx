@@ -190,7 +190,7 @@ var TweetComponent = React.createClass({
 	render() {
 		var tweet = this.props.tweet;
 		var tweetCountTable = this.props.timeline.tweetCountTable;
-		var idStr = 'ID:' + tweet.hashedId + '[' + tweet.tweetCount + '/' + tweetCountTable[tweet.hashedId] + ']';
+		var idStr = ' ID:' + tweet.hashedId + '[' + tweet.tweetCount + '/' + tweetCountTable[tweet.hashedId] + ']';
 		var textObj = {
 			__html: tweet.text
 		};
@@ -198,7 +198,7 @@ var TweetComponent = React.createClass({
 		var NAME = tweet.NAME;
 		var dateString = tweet.dateString;
 		return (
-			<div>{idx}: {NAME} {dateString} 
+			<div>{idx}: {NAME} {dateString}
 				<span onClick={this.userDetail}>{idStr}</span>
 				<br />
 				<span dangerouslySetInnerHTML={textObj}></span>
