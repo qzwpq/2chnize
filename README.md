@@ -16,6 +16,7 @@ npm install
 echo '[]' | tee ng-list/{client,text,screen_name}.json replace-rule/text.json > /dev/null
 cp sample/config.json.sample config.json
 cp sample/keys.json.sample keys.json
+cp sample/timeline.json.sample timeline.json
 vim keys.json # write your keys
 electron .
 ```

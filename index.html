@@ -8,7 +8,9 @@
 <body>
 </body>
 
-<script type="text/javascript" src="./node_modules/react/dist/JSXTransformer.js"></script>
-<script type="text/jsx;harmony=true" src="./app.jsx"></script>
+<script type="text/javascript">
+	require('babel/register');
+	require('./src/app.js');
+</script>
 
 </html>

@@ -4,6 +4,7 @@
 	"main": "main.js",
 	"dependencies": {
 		"twit": "",
-		"react": ""
+		"react": "",
+		"babel": ""
 	}
 }
