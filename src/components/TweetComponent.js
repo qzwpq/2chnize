@@ -4,7 +4,9 @@ class TweetComponent extends React.Component {
 	render() {
 		return (
 			<div>
-				{this.props.tweet.user.screen_name + ':' + this.props.tweet.text}
+				{this.props.tweet.dateString + ' ID:' + this.props.tweet.hashedId}
+				<br />
+				{this.props.tweet.text}
 			</div>
 		);
 	}
