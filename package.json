@@ -5,6 +5,7 @@
 	"dependencies": {
 		"twit": "",
 		"react": "",
-		"babel": ""
+		"babel": "",
+		"lodash": ""
 	}
 }

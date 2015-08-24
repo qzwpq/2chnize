@@ -6,7 +6,7 @@ class TweetComponent extends React.Component {
 			<div>
 				{this.props.tweet.dateString + ' ID:' + this.props.tweet.hashedId}
 				<br />
-				{this.props.tweet.text}
+				{this.props.tweet.textParts}
 			</div>
 		);
 	}
