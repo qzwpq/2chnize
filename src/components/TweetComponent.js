@@ -1,12 +1,15 @@
 import React from 'react';
+import config from '../../config.json';
+import getTextParts from '../util/getTextParts';
 
 class TweetComponent extends React.Component {
 	render() {
+		let {tweet, handlers, tweets, idx} = this.props;
 		return (
 			<div>
-				{this.props.tweet.dateString + ' ID:' + this.props.tweet.hashedId}
+				{`${idx} ${config.NONAME_NAME} ${tweet.dateString} ID:${tweet.hashedId}`}
 				<br />
-				{this.props.tweet.textParts}
+				{getTextParts(tweet, {handlers, tweets})}
 			</div>
 		);
 	}

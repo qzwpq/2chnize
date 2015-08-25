@@ -6,13 +6,18 @@ class TimelineComponent extends React.Component {
 		return (
 			<div>
 				{/*<TimelineHeaderComponent type={this.props.timeline.type} />*/}
-				{this.props.timeline.contents.map(content => {
+				{this.props.timeline.contents.map((content, idx, contents) => {
 					switch(this.props.timeline.type) {
 						case 'favorite':
 						case 'search':
 						case 'tweet':
 						case 'list':
-							return <TweetComponent key={content.id_str} tweet={content} />;
+							let props = {
+								tweets: contents,
+								tweet: content,
+								idx
+							};
+							return <TweetComponent key={content.id_str} {...props} />;
 						/*
 						case 'following':
 						case 'follower':
