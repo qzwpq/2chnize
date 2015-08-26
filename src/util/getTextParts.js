@@ -29,7 +29,15 @@ const getEntities = (tweet, handlers = {}) => {
 		let entities = _.get(tweet, path.path);
 		return entities && entities.map(entity => _.assign(entity, _.omit(path, 'path')));
 	});
-	return _.chain(allEntities).flattenDeep().compact().sortBy(e => e.indices[0]).value();
+	let newLines = (() => {
+		let {text} = tweet;
+		let indicesList = [];
+		for(let i = text.length - 1; i >= 0; i--) {
+			text[i] === '\n' && indicesList.unshift([i, i + 1]);
+		}
+		return indicesList.map(indices => ({type: 'newLine', indices}));
+	})();
+	return _.chain(allEntities.concat(newLines)).flattenDeep().compact().sortBy(e => e.indices[0]).value();
 };
 
 const replaceRule = (entity, tweet, tweets = []) => {
@@ -59,6 +67,11 @@ const replaceRule = (entity, tweet, tweets = []) => {
 			return {
 				oldText: entity.url,
 				newText: <img src={`${entity.media_url_https}:thumb`} onClick={entity.handler} />
+			};
+		case 'newLine':
+			return {
+				oldText: '\n',
+				newText: <br />
 			};
 	}
 };
