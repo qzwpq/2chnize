@@ -83,7 +83,8 @@ export default (tweet, {handlers = {}, tweets = []} = {}) => {
 		let entity = entities.shift();
 		let {oldText, newText} = replaceRule(entity, tweet, tweets);
 		let textPart = textParts[i];
-		let splited = textPart.split(oldText);
+		let splited = textPart.split(oldText); // split once from left
+		splited = [splited.shift(), splited.join(oldText)];
 		let inc = 0;
 		if(splited[0] === '' && splited[1] === '') {
 			splited = [newText];
