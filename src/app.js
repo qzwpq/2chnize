@@ -4,19 +4,21 @@ import keys from '../keys.json';
 import timelineConfig from '../timeline.json';
 import MainComponent from './components/MainComponent';
 import prepareTweet from './util/prepareTweet';
+import TweetCountTable from './util/TweetCountTable';
 
 let Twits = keys.map(key => new Twit(key));
 
 let timelines = timelineConfig.map(timeline => {
 	timeline.Twit = Twits[timeline.key];
 	timeline.contents = [];
+	timeline.tweetCountTable = new TweetCountTable();
 	return timeline;
 });
 
 let timeline = timelines[0];
 
 const render = tweet => {
-	tweet = prepareTweet(tweet);
+	tweet = prepareTweet(tweet, timeline);
 	timeline.contents.push(tweet);
 	React.render(<MainComponent timelines={timelines} />, document.body);
 };

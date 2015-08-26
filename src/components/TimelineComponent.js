@@ -13,6 +13,7 @@ class TimelineComponent extends React.Component {
 						case 'tweet':
 						case 'list':
 							let props = {
+								tweetCountTable: this.props.timeline.tweetCountTable,
 								tweets: contents,
 								tweet: content,
 								idx
