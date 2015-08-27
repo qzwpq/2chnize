@@ -6,23 +6,23 @@ const getEntities = (tweet, handlers = {}) => {
 	let paths = [
 		{
 			path: ['entities', 'urls'],
-			type: 'url',
+			treatAs: 'url',
 			handler: handlers.url
 		},
 		{
 			path: ['entities', 'hashtags'],
-			type: 'hashtag',
+			treatAs: 'hashtag',
 			handler: handlers.hashtag
 		},
 		{
 			path: ['entities', 'user_mentions'],
-			type: 'user_mention',
+			treatAs: 'user_mention',
 			handler: handlers.user_mention
 		},
 		{
-			path: ['extended_entities', 'media'],
-			type: 'media',
-			handler: handlers.media
+			path: ['entities', 'media'],
+			treatAs: 'url',
+			handler: handlers.url
 		}
 	];
 	let allEntities = paths.map(path => {
@@ -35,13 +35,13 @@ const getEntities = (tweet, handlers = {}) => {
 		for(let i = text.length - 1; i >= 0; i--) {
 			text[i] === '\n' && indicesList.unshift([i, i + 1]);
 		}
-		return indicesList.map(indices => ({type: 'newLine', indices}));
+		return indicesList.map(indices => ({treatAs: 'newLine', indices}));
 	})();
 	return _.chain(allEntities.concat(newLines)).flattenDeep().compact().sortBy(e => e.indices[0]).value();
 };
 
 const replaceRule = (entity, tweet, tweets = []) => {
-	switch(entity.type) {
+	switch(entity.treatAs) {
 		case 'url':
 			return {
 				oldText: entity.url,
@@ -63,17 +63,34 @@ const replaceRule = (entity, tweet, tweets = []) => {
 				oldText: `@${entity.screen_name}`,
 				newText: <span onClick={entity.handler}>{resText}</span>
 			};
-		case 'media':
-			return {
-				oldText: entity.url,
-				newText: <img src={`${entity.media_url_https}:thumb`} onClick={entity.handler} />
-			};
 		case 'newLine':
 			return {
 				oldText: '\n',
 				newText: <br />
 			};
 	}
+};
+
+const getMediaElements = tweet => {
+	let {media} = tweet.extended_entities;
+	let attrs = {};
+	return media.map(medium => {
+		switch(medium.type) {
+			case 'photo':
+				return <img src={`${medium.media_url_https}:thumb`} />;
+			case 'animated_gif':
+				attrs.loop = true;
+			case 'video':
+				attrs.controls = true;
+				return (
+					<video {...attrs}>
+						{medium.video_info.variants.map(variant =>
+							<source type={variant.content_type} src={variant.url} key={variant.url} />
+						)}
+					</video>
+				);
+		}
+	});
 };
 
 export default (tweet, {handlers = {}, tweets = []} = {}) => {
@@ -99,6 +116,10 @@ export default (tweet, {handlers = {}, tweets = []} = {}) => {
 		}
 		textParts.splice(i, 1, ...splited);
 		i += inc;
+	}
+	if(_.get(tweet, ['extended_entities', 'media'])) {
+		let mediaElements = getMediaElements(tweet);
+		textParts.push(<br />, ...mediaElements);
 	}
 	return textParts;
 };
