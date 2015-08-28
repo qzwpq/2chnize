@@ -38,7 +38,7 @@ class TweetComponent extends React.Component {
 						let attrs = {key: idx};
 						switch(mediaPart.type) {
 							case 'photo':
-								attrs.src = `${mediaPart.media_url_https}:thumb`;
+								attrs.src = mediaPart.src;
 								return <img {...attrs} />;
 							case 'animated_gif':
 								attrs.loop = true;
@@ -47,7 +47,7 @@ class TweetComponent extends React.Component {
 								return (
 									<video {...attrs}>
 										{mediaPart.video_info.variants.map((variant, idx) =>
-											<source type={variant.content_type} src={variant.url} key={variant.url} />
+											<source type={variant.content_type} src={variant.url} key={idx} />
 										)}
 									</video>
 								);
