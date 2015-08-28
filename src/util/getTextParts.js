@@ -1,28 +1,22 @@
 import _ from 'lodash';
-import React from 'react';
-import createHashedId from './createHashedId';
 
-const getEntities = (tweet, handlers = {}) => {
+const getEntities = tweet => {
 	let paths = [
 		{
 			path: ['entities', 'urls'],
-			treatAs: 'url',
-			handler: handlers.url
+			treatAs: 'url'
 		},
 		{
 			path: ['entities', 'hashtags'],
-			treatAs: 'hashtag',
-			handler: handlers.hashtag
+			treatAs: 'hashtag'
 		},
 		{
 			path: ['entities', 'user_mentions'],
-			treatAs: 'user_mention',
-			handler: handlers.user_mention
+			treatAs: 'user_mention'
 		},
 		{
 			path: ['entities', 'media'],
-			treatAs: 'url',
-			handler: handlers.url
+			treatAs: 'url'
 		}
 	];
 	let allEntities = paths.map(path => {
@@ -40,86 +34,43 @@ const getEntities = (tweet, handlers = {}) => {
 	return _.chain(allEntities.concat(newLines)).flattenDeep().compact().sortBy(e => e.indices[0]).value();
 };
 
-const replaceRule = (entity, tweet, tweets = []) => {
+const getTextOfEntity = entity => {
 	switch(entity.treatAs) {
 		case 'url':
-			return {
-				oldText: entity.url,
-				newText: <a href={entity.expanded_url} onClick={entity.handler}>{entity.display_url}</a>
-			};
+			return entity.url;
 		case 'hashtag':
-			return {
-				oldText: `#${entity.text}`,
-				newText: <span onClick={entity.handler}>{`#${entity.text}`}</span>
-			};
+			return `#${entity.text}`;
 		case 'user_mention':
-			let resNumber = -1;
-			if(entity.id_str === tweet.in_reply_to_user_id_str) {
-				resNumber = tweets.findIndex(t => t.id_str === tweet.in_reply_to_status_id_str);
-			}
-			let resText = resNumber > -1 ?
-				`>>${resNumber}` : `ID:${createHashedId(entity.screen_name, tweet.created_at)}`;
-			return {
-				oldText: `@${entity.screen_name}`,
-				newText: <span onClick={entity.handler}>{resText}</span>
-			};
+			return `@${entity.screen_name}`;
 		case 'newLine':
-			return {
-				oldText: '\n',
-				newText: <br />
-			};
+			return '\n';
 	}
 };
 
-const getMediaElements = tweet => {
-	let {media} = tweet.extended_entities;
-	let attrs = {};
-	return media.map(medium => {
-		switch(medium.type) {
-			case 'photo':
-				return <img src={`${medium.media_url_https}:thumb`} />;
-			case 'animated_gif':
-				attrs.loop = true;
-			case 'video':
-				attrs.controls = true;
-				return (
-					<video {...attrs}>
-						{medium.video_info.variants.map(variant =>
-							<source type={variant.content_type} src={variant.url} key={variant.url} />
-						)}
-					</video>
-				);
-		}
-	});
-};
 
-export default (tweet, {handlers = {}, tweets = []} = {}) => {
+export default tweet => {
 	let textParts = [tweet.text];
-	let entities = getEntities(tweet, handlers);
-	for(let i = 0; i < textParts.length && entities.length > 0; i++) {
+	let entities = getEntities(tweet);
+	for (let i = 0; i < textParts.length && entities.length > 0; i++) {
 		let entity = entities.shift();
-		let {oldText, newText} = replaceRule(entity, tweet, tweets);
+		let entityText = getTextOfEntity(entity);
 		let textPart = textParts[i];
-		let splited = textPart.split(oldText); // split once from left
-		splited = [splited.shift(), splited.join(oldText)];
+		let splited = textPart.split(entityText); // split once from left
+		splited = [splited.shift(), splited.join(entityText)];
 		let inc = 0;
 		if(splited[0] === '' && splited[1] === '') {
-			splited = [newText];
+			splited = [entity];
 		} else if(splited[0] === '') {
-			splited[0] = newText;
+			splited[0] = entity;
 		} else if(splited[1] === '') {
-			splited[1] = newText;
+			splited[1] = entity;
 			inc = 1;
 		} else {
-			splited.splice(1, 0, newText);
+			splited.splice(1, 0, entity);
 			inc = 1;
 		}
 		textParts.splice(i, 1, ...splited);
 		i += inc;
-	}
-	if(_.get(tweet, ['extended_entities', 'media'])) {
-		let mediaElements = getMediaElements(tweet);
-		textParts.push(<br />, ...mediaElements);
 	}
 	return textParts;
 };
