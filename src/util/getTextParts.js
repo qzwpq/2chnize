@@ -34,43 +34,19 @@ const getEntities = tweet => {
 	return _.chain(allEntities.concat(newLines)).flattenDeep().compact().sortBy(e => e.indices[0]).value();
 };
 
-const getTextOfEntity = entity => {
-	switch(entity.treatAs) {
-		case 'url':
-			return entity.url;
-		case 'hashtag':
-			return `#${entity.text}`;
-		case 'user_mention':
-			return `@${entity.screen_name}`;
-		case 'newLine':
-			return '\n';
-	}
-};
-
-
 export default tweet => {
-	let textParts = [tweet.text];
+	const {text} = tweet;
 	let entities = getEntities(tweet);
-	for (let i = 0; i < textParts.length && entities.length > 0; i++) {
-		let entity = entities.shift();
-		let entityText = getTextOfEntity(entity);
-		let textPart = textParts[i];
-		let splited = textPart.split(entityText); // split once from left
-		splited = [splited.shift(), splited.join(entityText)];
-		let inc = 0;
-		if(splited[0] === '' && splited[1] === '') {
-			splited = [entity];
-		} else if(splited[0] === '') {
-			splited[0] = entity;
-		} else if(splited[1] === '') {
-			splited[1] = entity;
-			inc = 1;
-		} else {
-			splited.splice(1, 0, entity);
-			inc = 1;
-		}
-		textParts.splice(i, 1, ...splited);
-		i += inc;
-	}
+	let textParts = [];
+	let cursor = 0;
+	entities.forEach(entity => {
+		let [start, end] = entity.indices;
+		let gapText = text.substring(cursor, start);
+		gapText && textParts.push(gapText);
+		textParts.push(entity);
+		cursor = end;
+	});
+	let remainingText = text.substring(cursor);
+	remainingText && textParts.push(remainingText);
 	return textParts;
 };
