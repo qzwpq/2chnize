@@ -33,27 +33,29 @@ class TweetComponent extends React.Component {
 						}
 					})}
 				</div>
-				<div>
-					{tweet.mediaParts.map((mediaPart, idx) => {
-						let attrs = {key: idx};
-						switch(mediaPart.type) {
-							case 'photo':
-								attrs.src = mediaPart.src;
-								return <img {...attrs} />;
-							case 'animated_gif':
-								attrs.loop = true;
-							case 'video':
-								attrs.controls = true;
-								return (
-									<video {...attrs}>
-										{mediaPart.video_info.variants.map((variant, idx) =>
-											<source type={variant.content_type} src={variant.url} key={idx} />
-										)}
-									</video>
-								);
-						}
-					})}
-				</div>
+				{!tweet.mediaParts.length ? null : (
+					<div>
+						{tweet.mediaParts.map((mediaPart, idx) => {
+							let attrs = {key: idx};
+							switch(mediaPart.type) {
+								case 'photo':
+									attrs.src = mediaPart.src;
+									return <img {...attrs} />;
+								case 'animated_gif':
+									attrs.loop = true;
+								case 'video':
+									attrs.controls = true;
+									return (
+										<video {...attrs}>
+											{mediaPart.video_info.variants.map((variant, idx) =>
+												<source type={variant.content_type} src={variant.url} key={idx} />
+											)}
+										</video>
+									);
+							}
+						})}
+					</div>
+				)}
 			</div>
 		);
 	}
