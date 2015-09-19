@@ -1,5 +1,5 @@
 class TweetCountTable {
-	constructor(initialTable = {}) {
+	constructor(initialTable = new Map()) {
 		this._table = initialTable;
 	}
 	inc(id) {
@@ -8,11 +8,11 @@ class TweetCountTable {
 		return count;
 	}
 	get(id) {
-		let count = this._table[id] || 0;
+		let count = this._table.get(id) || 0;
 		return count;
 	}
 	_set(id, count = 0) {
-		this._table[id] = count;
+		this._table.set(id, count);
 	}
 }
 
