@@ -14,7 +14,7 @@ class TweetComponent extends React.Component {
 					<span className='date'>{tweet.dateString}</span>
 					<span className='id'>{idString}</span>
 				</div>
-				<div>
+				<div className='text'>
 					{tweet.textParts.map((textPart, idx) => {
 						switch(textPart.treatAs) {
 							case 'url':
@@ -29,8 +29,6 @@ class TweetComponent extends React.Component {
 								let resText = resNumber > -1 ?
 									`>>${resNumber}` : `ID:${createHashedId(textPart.screen_name, tweet.created_at)}`;
 								return <span key={idx}>{resText}</span>;
-							case 'newLine':
-								return <br key={idx} />;
 							default:
 								return <span key={idx}>{textPart}</span>;
 						}

@@ -19,6 +19,10 @@ body {
 	padding-left: 1em;
 }
 
+.text {
+	white-space: pre-wrap;
+}
+
 .media {
 	height: 128px;
 	line-height: 0;
