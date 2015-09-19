@@ -1,0 +1,30 @@
+body {
+	background-color: #efefef;
+}
+
+.tweet + .tweet {
+	margin-top: 0.7em;
+}
+
+.user > span + span {
+	margin-left: 0.5em;
+}
+
+.user > .name {
+	text-decoration: underline;
+	color: blue;
+}
+
+.tweet > div + div {
+	padding-left: 1em;
+}
+
+.media {
+	height: 128px;
+	line-height: 0;
+	display: inline-block;
+}
+
+.media > img, .media > video {
+	height: 100%;
+}

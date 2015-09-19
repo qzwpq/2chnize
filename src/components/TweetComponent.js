@@ -7,9 +7,12 @@ class TweetComponent extends React.Component {
 		let {tweetCountTable, tweet, handlers, tweets, idx} = this.props;
 		let idString = `ID:${tweet.hashedId}[${tweet.tweetCount}/${tweetCountTable.get(tweet.hashedId)}]`;
 		return (
-			<div>
-				<div>
-					{`${idx} ${config.NONAME_NAME} ${tweet.dateString} ${idString}`}
+			<div className='tweet'>
+				<div className='user'>
+					<span className='index'>{idx}</span>
+					<span className='name'>{config.NONAME_NAME}</span>
+					<span className='date'>{tweet.dateString}</span>
+					<span className='id'>{idString}</span>
 				</div>
 				<div>
 					{tweet.textParts.map((textPart, idx) => {
@@ -34,7 +37,7 @@ class TweetComponent extends React.Component {
 					})}
 				</div>
 				{!tweet.mediaParts.length ? null : (
-					<div>
+					<div className='media'>
 						{tweet.mediaParts.map((mediaPart, idx) => {
 							let attrs = {key: idx};
 							switch(mediaPart.type) {
