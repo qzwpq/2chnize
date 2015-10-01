@@ -33,12 +33,12 @@ export default tweet => {
 	let cursor = 0;
 	entities.forEach(entity => {
 		let [start, end] = entity.indices;
-		let gapText = chars.slice(cursor, start).join('');
+		let gapText = _.unescape(chars.slice(cursor, start).join(''));
 		gapText && textParts.push(gapText);
 		textParts.push(entity);
 		cursor = end;
 	});
-	let remainingText = chars.slice(cursor).join('');
+	let remainingText = _.unescape(chars.slice(cursor).join(''));
 	remainingText && textParts.push(remainingText);
 	return textParts;
 };
