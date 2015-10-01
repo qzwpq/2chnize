@@ -27,18 +27,18 @@ const getEntities = tweet => {
 };
 
 export default tweet => {
-	const {text} = tweet;
+	const chars = [...tweet.text];
 	let entities = getEntities(tweet);
 	let textParts = [];
 	let cursor = 0;
 	entities.forEach(entity => {
 		let [start, end] = entity.indices;
-		let gapText = text.substring(cursor, start);
+		let gapText = chars.slice(cursor, start).join('');
 		gapText && textParts.push(gapText);
 		textParts.push(entity);
 		cursor = end;
 	});
-	let remainingText = text.substring(cursor);
+	let remainingText = chars.slice(cursor).join('');
 	remainingText && textParts.push(remainingText);
 	return textParts;
 };
