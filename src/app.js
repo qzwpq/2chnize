@@ -1,5 +1,6 @@
 import Twit from 'twit';
 import React from 'react';
+import ReactDOM from 'react-dom';
 import keys from '../keys.json';
 import timelineConfig from '../timeline.json';
 import MainComponent from './components/MainComponent';
@@ -20,7 +21,7 @@ let timeline = timelines[0];
 const render = tweet => {
 	tweet = prepareTweet(tweet, timeline);
 	timeline.contents.push(tweet);
-	React.render(<MainComponent timelines={timelines} />, document.body);
+	ReactDOM.render(<MainComponent timelines={timelines} />, document.getElementById('app'));
 };
 
 timeline.Twit.get('statuses/home_timeline', {count: 100}, (err, dat) => {
