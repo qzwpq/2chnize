@@ -1,25 +1,22 @@
 import _ from 'lodash';
 
-const photoRegExps = {
-	gyazo: [
+const compactMap = _.flow(_.map, _.compact);
+
+const photoRegExps = new Set([
+	[ // gyazo
 		/^https?:\/\/(?:(?:embed|i)\.)?gyazo\.com\/([\da-z]{32}).*/,
 		'https://gyazo.com/$1/raw'
 	],
-	yabumi: [
+	[ // yabumi
 		/^https?:\/\/yabumi\.cc\/([\da-z]{24}\.(?:png|jpe?g|gif|svg)).*/,
 		'https://yabumi.cc/$1'
 	]
-};
+]);
 
-const videoRegExps = {};
-
-const photoRegExpsList = _.values(photoRegExps);
-
-const videoRegExpsList = _.values(videoRegExps);
+const videoRegExps = new Set();
 
 const getMediaUrl = urlEntity => {
-	for(let i = photoRegExpsList.length - 1; i >= 0; i--) {
-		let [regExp, newSubStr] = photoRegExpsList[i];
+	for(let [regExp, newSubStr] of photoRegExps) {
 		if(regExp.test(urlEntity.expanded_url)) {
 			return {
 				type: 'photo',
@@ -27,8 +24,7 @@ const getMediaUrl = urlEntity => {
 			};
 		}
 	}
-	for(let i = videoRegExpsList.length - 1; i >= 0; i--) {
-		let [regExp, newSubStr] = videoRegExpsList[i];
+	for(let [regExp, newSubStr] of videoRegExps) {
 		if(regExp.test(urlEntity.expanded_url)) {
 			return {
 				type: 'video',
@@ -46,12 +42,8 @@ const getMediaUrl = urlEntity => {
 };
 
 export default tweet => {
-	let mediaParts = [];
-	tweet.entities.urls.forEach(url => {
-		let mediaPart = getMediaUrl(url);
-		mediaPart && mediaParts.push(mediaPart);
-	});
-	if(_.get(tweet, ['extended_entities', 'media'])) {
+	let mediaParts = compactMap(tweet.entities.urls, getMediaUrl);
+	if(_.has(tweet, ['extended_entities', 'media'])) {
 		let mediaEntities = tweet.extended_entities.media.map(medium => {
 			if(medium.type === 'photo') {
 				medium.src = `${medium.media_url_https}:thumb`;

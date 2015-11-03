@@ -37,7 +37,7 @@ class TweetComponent extends React.Component {
 						}
 					})}
 				</div>
-				{!tweet.mediaParts.length ? null : (
+				{!!tweet.mediaParts.length && (
 					<div className='media'>
 						{tweet.mediaParts.map((mediaPart, idx) => {
 							let attrs = {key: idx};

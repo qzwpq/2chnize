@@ -1,5 +1,7 @@
 import _ from 'lodash';
 
+const flatMap = _.flow(_.map, _.flatten, _.compact);
+
 const getEntities = tweet => {
 	let paths = [
 		{
@@ -19,25 +21,23 @@ const getEntities = tweet => {
 			treatAs: 'url'
 		}
 	];
-	let allEntities = paths.map(path => {
+	let allEntities = flatMap(paths, path => {
 		let entities = _.get(tweet, path.path);
 		return entities && entities.map(entity => _.assign(entity, _.omit(path, 'path')));
 	});
-	return _.chain(allEntities).flatten().compact().sortBy(e => e.indices[0]).value();
+	return _.sortBy(allEntities, ['indices', '0']);
 };
 
 export default tweet => {
 	const chars = [...tweet.text];
 	let entities = getEntities(tweet);
-	let textParts = [];
 	let cursor = 0;
-	entities.forEach(entity => {
+	let textParts = flatMap(entities, entity => {
 		let [start, end] = entity.indices;
 		let gapText = _.unescape(chars.slice(cursor, start).join(''));
-		gapText && textParts.push(gapText);
-		textParts.push(entity);
 		cursor = end;
-	});
+		return [gapText, entity];
+	})
 	let remainingText = _.unescape(chars.slice(cursor).join(''));
 	remainingText && textParts.push(remainingText);
 	return textParts;
