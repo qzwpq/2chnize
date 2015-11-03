@@ -28,7 +28,7 @@ class TimelineComponent extends React.Component {
 							let props = {
 								tweetCountTable: this.props.timeline.tweetCountTable,
 								handlers: {
-									fuck: this.fuck.bind(this)
+									fuck: ::this.fuck
 								},
 								tweets: contents,
 								tweet: content,
