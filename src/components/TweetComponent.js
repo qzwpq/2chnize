@@ -19,14 +19,14 @@ class TweetComponent extends React.Component {
 				</div>
 				<div className='text'>
 					{tweet.textParts.map((textPart, idx) => {
-						switch(textPart.treatAs) {
+						switch (textPart.treatAs) {
 							case 'url':
 								return <a key={idx} href={textPart.expanded_url}>{textPart.display_url}</a>;
 							case 'hashtag':
 								return <span key={idx}>{`#${textPart.text}`}</span>;
 							case 'user_mention':
 								let resNumber = -1;
-								if(textPart.id_str === tweet.in_reply_to_user_id_str) {
+								if (textPart.id_str === tweet.in_reply_to_user_id_str) {
 									resNumber = tweets.findIndex(t => t.id_str === tweet.in_reply_to_status_id_str);
 								}
 								let resText = resNumber > -1 ?
@@ -41,7 +41,7 @@ class TweetComponent extends React.Component {
 					<div className='media'>
 						{tweet.mediaParts.map((mediaPart, idx) => {
 							let attrs = {key: idx};
-							switch(mediaPart.type) {
+							switch (mediaPart.type) {
 								case 'photo':
 									attrs.src = mediaPart.src;
 									return <img {...attrs} />;

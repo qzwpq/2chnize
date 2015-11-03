@@ -7,7 +7,7 @@ class TimelineComponent extends React.Component {
 			<div>
 				{/*<TimelineHeaderComponent type={this.props.timeline.type} />*/}
 				{this.props.timeline.contents.map((content, idx, contents) => {
-					switch(this.props.timeline.type) {
+					switch (this.props.timeline.type) {
 						case 'favorite':
 						case 'search':
 						case 'tweet':

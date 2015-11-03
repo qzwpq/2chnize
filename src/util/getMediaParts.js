@@ -16,16 +16,16 @@ const photoRegExps = new Set([
 const videoRegExps = new Set();
 
 const getMediaUrl = urlEntity => {
-	for(let [regExp, newSubStr] of photoRegExps) {
-		if(regExp.test(urlEntity.expanded_url)) {
+	for (let [regExp, newSubStr] of photoRegExps) {
+		if (regExp.test(urlEntity.expanded_url)) {
 			return {
 				type: 'photo',
 				src: urlEntity.expanded_url.replace(regExp, newSubStr)
 			};
 		}
 	}
-	for(let [regExp, newSubStr] of videoRegExps) {
-		if(regExp.test(urlEntity.expanded_url)) {
+	for (let [regExp, newSubStr] of videoRegExps) {
+		if (regExp.test(urlEntity.expanded_url)) {
 			return {
 				type: 'video',
 				video_info: {
@@ -43,9 +43,9 @@ const getMediaUrl = urlEntity => {
 
 export default tweet => {
 	let mediaParts = compactMap(tweet.entities.urls, getMediaUrl);
-	if(_.has(tweet, ['extended_entities', 'media'])) {
+	if (_.has(tweet, ['extended_entities', 'media'])) {
 		let mediaEntities = tweet.extended_entities.media.map(medium => {
-			if(medium.type === 'photo') {
+			if (medium.type === 'photo') {
 				medium.src = `${medium.media_url_https}:thumb`;
 			}
 			return medium;
