@@ -31,7 +31,6 @@ see sample directory
 * key-binding
 * word-search
 * reply
-* favorite
 * retweet
 * list
 
