@@ -11,7 +11,10 @@ class TweetComponent extends React.Component {
 				<div className='user'>
 					<span className='index'>{idx}</span>
 					<span className='name'>{config.NONAME_NAME}</span>
-					<span className='date'>{tweet.dateString}</span>
+					<span className='datetime'>
+						<span className='date'>{tweet.date}</span>
+						<span className='time'>{tweet.time}</span>
+					</span>
 					<span className='id'>{idString}</span>
 				</div>
 				<div className='text'>
