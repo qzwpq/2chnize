@@ -1,14 +1,27 @@
+import _ from 'lodash';
 import React from 'react';
 import config from '../../config.json';
 import createHashedId from '../util/createHashedId';
 
 class TweetComponent extends React.Component {
+	async handleFuck() {
+		let {id_str} = this.props.tweet;
+		try {
+			let dat = await this.props.handlers.fuck({id: id_str, fucked: this.isFucked()});
+			this.setState({fucked: dat.favorited});
+		} catch (e) {
+			console.warn(e);
+		}
+	}
+	isFucked() {
+		return _.get(this.state, 'fucked', this.props.tweet.favorited);
+	}
 	render() {
 		let {tweetCountTable, tweet, handlers, tweets, idx} = this.props;
 		let idString = `ID:${tweet.hashedId}[${tweet.tweetCount}/${tweetCountTable.get(tweet.hashedId)}]`;
 		return (
-			<div className='tweet'>
-				<div className='user'>
+			<div className={`tweet${this.isFucked() ? ' fucked' : ''}`}>
+				<div className='user' onClick={() => this.handleFuck()}>
 					<span className='index'>{idx}</span>
 					<span className='name'>{config.NONAME_NAME}</span>
 					<span className='datetime'>

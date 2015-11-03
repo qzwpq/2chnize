@@ -2,8 +2,17 @@ body {
 	background-color: #efefef;
 }
 
+.tweet {
+	overflow-x: hidden;
+	word-wrap: break-word;
+}
+
 .tweet + .tweet {
 	margin-top: 0.7em;
+}
+
+.user {
+	cursor: pointer;
 }
 
 .user > span + span {
@@ -24,7 +33,26 @@ body {
 }
 
 .text {
+	position: relative;
 	white-space: pre-wrap;
+}
+
+.fucked .text:after {
+	position: absolute;
+	top: 0;
+	right: 0;
+	padding-left: 100%;
+	z-index: -1;
+	content: 'fucked';
+	color: transparent;
+	background-image: -webkit-gradient( linear, left top, right top, color-stop(0, #f22), color-stop(0.15, #f2f), color-stop(0.3, #22f), color-stop(0.45, #2ff), color-stop(0.6, #2f2),color-stop(0.75, #2f2), color-stop(0.9, #ff2), color-stop(1, #f22) );
+	-webkit-background-clip: text;
+	animation: marquee 3s linear infinite;
+}
+
+@keyframes marquee {
+	0% { transform: translateX(0) }
+	100% { transform: translateX(-100%) }
 }
 
 .media {
