@@ -7,20 +7,20 @@ class TweetComponent extends React.Component {
 	async handleFuck() {
 		let {id_str} = this.props.tweet;
 		try {
-			let dat = await this.props.handlers.fuck({id: id_str, fucked: this.isFucked()});
+			let dat = await this.props.handlers.fuck({id: id_str, fucked: this.isFucked});
 			this.setState({fucked: dat.favorited});
 		} catch (e) {
 			console.warn(e);
 		}
 	}
-	isFucked() {
+	get isFucked() {
 		return _.get(this.state, 'fucked', this.props.tweet.favorited);
 	}
 	render() {
 		let {tweetCountTable, tweet, handlers, tweets, idx} = this.props;
 		let idString = `ID:${tweet.hashedId}[${tweet.tweetCount}/${tweetCountTable.get(tweet.hashedId)}]`;
 		return (
-			<div className={`tweet${this.isFucked() ? ' fucked' : ''}`}>
+			<div className={`tweet${this.isFucked ? ' fucked' : ''}`}>
 				<div className='user' onClick={() => this.handleFuck()}>
 					<span className='index'>{idx}</span>
 					<span className='name'>{config.NONAME_NAME}</span>
