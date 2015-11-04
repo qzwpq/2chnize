@@ -25,7 +25,7 @@ const getEntities = tweet => {
 		let entities = _.get(tweet, path.path);
 		return entities && entities.map(entity => _.assign(entity, _.omit(path, 'path')));
 	});
-	return _.sortBy(allEntities, ['indices', '0']);
+	return _.sortBy(allEntities, 'indices.0')
 };
 
 export default tweet => {
